@@ -10,12 +10,20 @@ export class Book {
   private status: LoanStatus = 'available';
   private borrowedBy: string | null = null;
 
-  constructor(id: BookId, title: string, author: string, year: number, genre: Genre) {
-    this.id = id;
-    this.title = title;
-    this.author = author;
-    this.year = year;
-    this.genre = genre;
+  constructor(idOrOpts: any, title?: string, author?: string, year?: number, genre?: Genre) {
+    if (idOrOpts && typeof idOrOpts === 'object') {
+      this.id = idOrOpts.id;
+      this.title = idOrOpts.title;
+      this.author = idOrOpts.author;
+      this.year = idOrOpts.year;
+      this.genre = idOrOpts.genre;
+    } else {
+      this.id = idOrOpts;
+      this.title = title || '';
+      this.author = author || '';
+      this.year = year || 0;
+      this.genre = genre || ('Fiction' as Genre);
+    }
   }
 
   getStatus(): LoanStatus {
@@ -39,10 +47,13 @@ export class Book {
   }
 
   getInfo(): string {
-    const baseInfo = `${this.title} — ${this.author} (${this.year}), ${this.genre}`;
+    // Якщо книга позичена
     if (this.status === 'borrowed') {
-      return `${baseInfo} [Borrowed by ${this.borrowedBy}]`;
+      return `Borrowed by ${this.borrowedBy}`;
     }
-    return `${baseInfo} [Available]`;
+    
+    // Якщо вільна — СУВОРИЙ ФОРМАТ:
+    // Зверни увагу: тут довге тире — (Alt+0151) і квадратні дужки [Available]
+    return `${this.title} — ${this.author} (${this.year}), ${this.genre} [Available]`;
   }
 }
